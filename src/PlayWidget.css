@@ -1,0 +1,12 @@
+.play-widget{
+    position: absolute;
+    z-index: 5;
+    bottom:2%;
+    padding: 0.2%;
+    width: 22%;
+    text-align: center;
+    border: 1px solid azure;
+}
+span {
+    color:white;
+}
