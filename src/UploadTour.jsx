@@ -1,6 +1,6 @@
 import React from 'react';
 import './UploadTour.css';
-import { Input, Button } from 'antd';
+import { Input } from 'antd';
 
 class UploadTour extends React.Component {
     constructor(props) {

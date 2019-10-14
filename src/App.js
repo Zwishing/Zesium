@@ -77,16 +77,7 @@ class App extends React.Component {
     this.viewer.scene.globe.showWaterEffect = true;
     this.viewer.scene.globe.enableLighting = false;
     this.viewer.scene.globe.showGroundAtmosphere = false;
-
-    var start = Cesium.JulianDate.fromDate(new Date(2015, 2, 25, 16));
-    var stop = Cesium.JulianDate.addSeconds(start, 360, new Cesium.JulianDate());
-    this.viewer.clock.startTime = start.clone();
-    this.viewer.clock.stopTime = stop.clone();
-    this.viewer.clock.currentTime = start.clone();
-    this.viewer.clock.clockRange = Cesium.ClockRange.LOOP_STOP;
-    this.viewer.clock.multiplier = 1.0;
-    this.viewer.clock.shouldAnimate = true;
-
+    
     this.viewer.camera.flyTo({
       destination: Cesium.Cartesian3.fromDegrees(105.7, 34.3, 22000000), //经度，纬度，高度
     });
