@@ -6,10 +6,12 @@ import MarkPoint from './MarkPoint';
 import FileSaver from 'file-saver';
 import TourBox from './TourBox';
 import PlayWidget from './PlayWidget';
-// import Position from './Position';
+import Position from './Position';
 import flag from './ico/pin (1).svg';
 import round from './ico/round.svg';
 import Tour from './Tour';
+import Cursor from './Cursor.js';
+import { Button } from 'antd';
 
 class App extends React.Component {
 
@@ -59,11 +61,11 @@ class App extends React.Component {
     Cesium.Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI1OGRjOTE5Zi1kZDhiLTQ0OGUtOTBlZS0yN2M4M2Y5NTU0MGYiLCJpZCI6ODIxMiwic2NvcGVzIjpbImFzbCIsImFzciIsImFzdyIsImdjIl0sImlhdCI6MTU1MzE4MDIzOH0.NYVM4T2s-_HaTH61ksq-Oz8uzkLk6FKL87d6XMuShXo';
 
     this.viewer = new Cesium.Viewer('cesiumContainer', {
-      animation: true, //控制视窗动画的播放速度
+      animation: false, //控制视窗动画的播放速度
       baseLayerPicker: true, //选择三维数字地球的底图（imagery and terrain）
       geocoder: false, //一种地理位置搜索工具，用于显示相机访问的地理位置。默认使用微软的Bing地图
       homeButton: false, //首页位置，点击之后将视图跳转到默认视角
-      infoBox: true,
+      infoBox: false,
       sceneModePicker: true, //切换2D、3D 和 Columbus View (CV) 模式
       selectionIndicator: false, //选择控件与infoBox对应的。 具体说明网址 (https://blog.csdn.net/hzh839900/article/details/78063197)
       navigationHelpButton: false, //帮助提示，如何操作数字地球
@@ -77,10 +79,27 @@ class App extends React.Component {
     this.viewer.scene.globe.showWaterEffect = true;
     this.viewer.scene.globe.enableLighting = false;
     this.viewer.scene.globe.showGroundAtmosphere = false;
-    
+
     this.viewer.camera.flyTo({
       destination: Cesium.Cartesian3.fromDegrees(105.7, 34.3, 22000000), //经度，纬度，高度
     });
+  };
+
+  test = () => {
+    let clock = new Cesium.Clock({
+      startTime: Cesium.JulianDate.fromIso8601("2013-12-25"),
+      stopTime: Cesium.JulianDate.fromIso8601("2013-12-26"),
+      clockRange: Cesium.ClockRange.LOOP_STOP,
+      multiplier: 1.0,
+      clockStep: Cesium.ClockStep.SYSTEM_CLOCK_MULTIPLIER,
+    });
+    clock.onTick.addEventListener(() => {
+      console.log(1);
+    });
+    setInterval(() => {
+      console.log(Cesium.JulianDate.toIso8601(clock.tick()));
+    }, 1000);
+    
   };
 
   setViewerCursor = () => {
@@ -143,7 +162,7 @@ class App extends React.Component {
           billboard: new Cesium.BillboardGraphics({
             image: round,
             scale: 1.5,
-            heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
+            heightReference: Cesium.HeightReference.NONE,
           }),
         });
         this.viewer.scene.screenSpaceCameraController.enableRotate = false;
@@ -217,6 +236,7 @@ class App extends React.Component {
 
     //设置鼠标滚动事件的处理函数，这里负责监听高度值变化
     handler.setInputAction((wheelment) => {
+      this.viewer.scene.screenSpaceCameraController.inertiaZoom = 0.1;
       height = Math.ceil(scene.camera.positionCartographic.height);
       roll = scene.camera.roll;
       heading = scene.camera.heading;
@@ -351,10 +371,12 @@ class App extends React.Component {
     const centerLon = centerPosition.longitude * 180 / Math.PI;;
     const centerLat = centerPosition.latitude * 180 / Math.PI;
     const centerHeight = Math.ceil(this.viewer.scene.camera.positionCartographic.height);
+    centerPosition.height = centerHeight;
+    const position = Cesium.Cartographic.toCartesian(centerPosition);
     const centerRoll = this.viewer.scene.camera.roll;
     const centerHeading = this.viewer.scene.camera.heading;
     const centerPitch = this.viewer.scene.camera.pitch;
-
+    console.log(centerPosition, position);
     this.setState({
       markPointPosition: {
         lon: centerLon, //当前鼠标位置的经度
@@ -397,6 +419,7 @@ class App extends React.Component {
   render() {
     return (
       <div id='cesiumContainer' style={{ cursor: this.state.cursor }}>
+        <Button type='primary' onClick={this.test}></Button>
         <TourBox
           showTourDialog={this.state.showTourDialog}
           addTourPoint={this.addMark}
@@ -417,7 +440,7 @@ class App extends React.Component {
           tourSave={this.saveTour}
           toggle={this.toggle}>
         </PlayWidget>
-        {/* <Position currentPosition={this.state.currentPosition}></Position> */}
+        <Position currentPosition={this.state.currentPosition}></Position>
       </div>
     );
   };

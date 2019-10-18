@@ -12,7 +12,6 @@ class MarkPoint {
     constructor(viewer) {
         this.viewer = viewer;
         this.pick = null;
-        this.cursor = 'grab';
     };
     /**
      * 添加标记的点的边框
@@ -32,6 +31,31 @@ class MarkPoint {
                 heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
             }),
         });
+    };
+
+    /**
+     * 获取当前视野的中心位置
+     * @returns {Object} 返回一个Json对象格式如下：
+     * location = {
+            position: position, //表示经纬度和高度 Cesium.Cartesian3对象
+            orientation: orientation, //表示航向 Cesium.HeadingPitchRoll对象
+        };
+     */
+    getCenterPosition = () => {
+        const result = this.viewer.camera.pickEllipsoid(new Cesium.Cartesian2(this.viewer.canvas.clientWidth / 2, this.viewer.canvas.clientHeight / 2));
+        const centerPosition = Cesium.Ellipsoid.WGS84.cartesianToCartographic(result);
+        const centerHeight = Math.ceil(this.viewer.scene.camera.positionCartographic.height);
+        centerPosition.height = centerHeight;
+        const position = Cesium.Cartographic.toCartesian(centerPosition);
+        const centerRoll = this.viewer.scene.camera.roll;
+        const centerHeading = this.viewer.scene.camera.heading;
+        const centerPitch = this.viewer.scene.camera.pitch;
+        const orientation = new Cesium.HeadingPitchRoll(centerHeading, centerPitch, centerRoll);
+        const location = {
+            position: position,
+            orientation: orientation,
+        };
+        return location;
     };
 
     /**
@@ -126,7 +150,7 @@ class MarkPoint {
      */
     successNewPoint = () => {
         this.viewer.entities.removeById('markBound');
-        this.viewer.entities._entities._array.pop().allowMove = false;   
+        this.viewer.entities._entities._array.pop().allowMove = false;
     };
 
     /**

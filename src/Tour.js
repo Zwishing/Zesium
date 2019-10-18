@@ -29,8 +29,11 @@ class Tour {
      */
     toPointTour = (lon, lat, height, heading, pitch, roll, duration, FlyToMode, wait) => {
         const destination = Cesium.Cartesian3.fromDegrees(lon, lat, height);
-        const orientation = new Cesium.HeadingPitchRoll(heading, pitch, roll);
-        const view = new Cesium.KmlCamera(destination, orientation);
+        //const orientation = new Cesium.HeadingPitchRoll(heading, pitch, roll);
+        const range = height * (Math.sin(Math.abs(pitch)));
+        const orientation = new Cesium.HeadingPitchRange(heading, pitch, range);
+        //const view = new Cesium.KmlCamera(destination, orientation);
+        const view = new Cesium.KmlLookAt(destination, orientation);
         const tourFlyTo = new Cesium.KmlTourFlyTo(duration, FlyToMode, view);
         const tourWait = new Cesium.KmlTourWait(wait);
         const pointTour = [tourFlyTo, tourWait];
@@ -89,8 +92,7 @@ class Tour {
                     this.tour.entryEnd.addEventListener(function (entry, terminated) {
                         console.log((terminated ? 'Terminate' : 'End') + ' ' + entry.type);
                     });
-                })
-        );
+                }))
     };
 
     /**
@@ -128,6 +130,14 @@ class Tour {
                     item.view.position.x,
                     item.view.position.y,
                     item.view.position.z);
+                console.log(destination);
+                var ellipsoid = this.viewer.scene.globe.ellipsoid;
+                var cartographic = ellipsoid.cartesianToCartographic(destination);
+                var lat = Cesium.Math.toDegrees(cartographic.latitude);
+                var lng = Cesium.Math.toDegrees(cartographic.longitude);
+                var alt = cartographic.height;
+                console.log(cartographic);
+                console.log(lng, lat, alt);
                 if ('headingPitchRoll' in item.view) {
                     const orientation = new Cesium.HeadingPitchRoll(
                         item.view.headingPitchRoll.heading,
@@ -136,7 +146,7 @@ class Tour {
                     const view = new Cesium.KmlCamera(destination, orientation);
                     const tourFlyTo = new Cesium.KmlTourFlyTo(item.duration, item.flyToMode, view);
                     tourPlaylist.push(tourFlyTo)
-                }else if('headingPitchRange' in item.view){
+                } else if ('headingPitchRange' in item.view) {
                     const orientation = new Cesium.HeadingPitchRange(
                         item.view.headingPitchRange.heading,
                         item.view.headingPitchRange.pitch,
