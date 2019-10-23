@@ -299,16 +299,17 @@ class App extends React.Component {
   };
 
   //转换为Json格式数据
-  toJsonTour = (name, tourPoints) => {
+  toJsonTour = (name, tourPoints, easingFunction) => {
     if (!Cesium.defined(this.Tour)) {
       this.Tour = new Tour(this.viewer);
     };
+    this.easingFunction = easingFunction;
     let pointsTour = [];
     tourPoints.map(item => {
       pointsTour.push(this.Tour.toPointTour(
         item.tourDestination.cartesian,
         item.tourDestination.height,
-        item.tourDestination.heading,
+        item.tourOrientation.heading,
         item.tourOrientation.pitch,
         item.tourOrientation.roll,
         item.tourDuration,
@@ -322,7 +323,7 @@ class App extends React.Component {
   };
   //开始游览
   startTour = () => {
-    this.Tour.startTour(this.tour);
+    this.Tour.startTour(this.tour, this.easingFunction);
   };
   //停止游览
   stopTour = () => {
@@ -346,8 +347,7 @@ class App extends React.Component {
     } catch {
       alert('请重新尝试下载！！');
     }
-
-  }
+  };
 
   //设置游览点是否可见
   showTourPoints = (tour) => {
@@ -417,6 +417,10 @@ class App extends React.Component {
 
   toggle = (stateName) => {
     if (stateName === 'showPlayBar') {
+      console.log(this.viewer.entities);
+      if(this.state.showPlayBar){
+        this.removeByName('tourMark');
+      };
       this.setState({
         showPlayBar: !this.state.showPlayBar,
       });

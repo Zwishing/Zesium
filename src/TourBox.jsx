@@ -11,6 +11,7 @@ import {
     InputNumber,
     Radio,
     Icon,
+    Select
 } from 'antd';
 
 class TourBox extends React.Component {
@@ -21,6 +22,7 @@ class TourBox extends React.Component {
         this.state = {
             disabled: false,
             showTourDialog: false,
+            easingFunction: 'QUADRACTIC_IN_OUT',
             tourName: '未命名游览路径',
             tourWait: 2,
             tourDuration: 7,
@@ -46,7 +48,7 @@ class TourBox extends React.Component {
                 height: tourPosition.height,
             },
             tourOrientation: {
-                heading:tourPosition.heading,
+                heading: tourPosition.heading,
                 pitch: tourPosition.pitch,
                 roll: tourPosition.roll
             },
@@ -57,7 +59,6 @@ class TourBox extends React.Component {
         this.setState({
             disabled: !this.state.disabled,
         });
-        console.log(this.tourTrack);
         this.props.markPointOK();
     };
 
@@ -83,6 +84,12 @@ class TourBox extends React.Component {
         });
     };
 
+    
+    onChangeEasingFunction = value =>{
+        this.setState({
+            easingFunction: value,
+        });
+    };
     //设置去下个游览点方式
     onChangeRadio = e => {
         this.setState({
@@ -97,7 +104,7 @@ class TourBox extends React.Component {
     //完成游览设置
     tourFinish = () => {
         if (this.tourTrack.length) {
-            this.props.toJsonTour(this.state.tourName, this.tourTrack);
+            this.props.toJsonTour(this.state.tourName, this.tourTrack,this.state.easingFunction);
             this.props.toggle('alwaysShowPlayBar');
             this.props.toggle('showTourDialog');
             //this.tourTrack.length = 0;
@@ -111,6 +118,7 @@ class TourBox extends React.Component {
     };
     render() {
         const { TabPane } = Tabs;
+        const { Option } = Select;
         return (
             <div className='tour-box'>
                 <Button type='primary' id='tour'
@@ -152,10 +160,10 @@ class TourBox extends React.Component {
                                     <br />
                                     <br />
                                     <div className='dialog-tabpane-item-addtour'>
-                                        <Row className='dialog-tabpane-item-addtour-row'> 
+                                        <Row className='dialog-tabpane-item-addtour-row'>
                                             <Col span={6}>
                                                 <Button type='default'
-                                                    ghost = {true}
+                                                    ghost={true}
                                                     onClick={this.addTourPoint}
                                                     disabled={this.state.disabled}
                                                     className='btn-addtour'>
@@ -165,7 +173,7 @@ class TourBox extends React.Component {
                                             <Col span={4} offset={10}>
                                                 {/* <Button.Group className='btn-addtour-state'> */}
                                                 <Button type='default'
-                                                    ghost = {true}
+                                                    ghost={true}
                                                     onClick={this.addTourPointOK}
                                                     disabled={!this.state.disabled}>
                                                     确认
@@ -173,7 +181,7 @@ class TourBox extends React.Component {
                                             </Col>
                                             <Col span={4}>
                                                 <Button type='default'
-                                                    ghost = {true}
+                                                    ghost={true}
                                                     onClick={this.addTourPointCancel}
                                                     disabled={!this.state.disabled}>
                                                     取消
@@ -207,6 +215,25 @@ class TourBox extends React.Component {
                                         </Row>
                                         <Row className='dialog-tabpane-item-addtour-row'>
                                             <Col>
+                                                <b>游览点间时间插值方式</b>
+                                            </Col>
+                                        </Row>
+                                        <Row className='dialog-tabpane-item-addtour-row'>
+                                            <Col>
+                                                <Select placeholder="选择两点时间插值方式"
+                                                    defaultValue ='QUADRACTIC_IN_OUT'
+                                                    onChange={this.onChangeEasingFunction}>
+                                                    <Option value='BACK_IN'>
+                                                        BACK_IN
+                                                    </Option>
+                                                    <Option value='BACK_IN_OUT'>
+                                                        BACK_IN_OUT
+                                                    </Option>
+                                                </Select>
+                                            </Col>
+                                        </Row>
+                                        <Row className='dialog-tabpane-item-addtour-row'>
+                                            <Col>
                                                 <span><b>去下个游览方式</b>
                                                     <Radio.Group onChange={this.onChangeRadio}
                                                         value={this.state.tourFlyToMode}
@@ -220,7 +247,7 @@ class TourBox extends React.Component {
                                         <Row className='dialog-tabpane-item-addtour-row'>
                                             <Col>
                                                 <Button type='default'
-                                                    ghost = {true}
+                                                    ghost={true}
                                                     onClick={this.tourFinish}
                                                     disabled={this.state.disabled}>
                                                     完成路径

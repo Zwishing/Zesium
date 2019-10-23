@@ -38,7 +38,6 @@ class Tour {
         const tourFlyTo = new Cesium.KmlTourFlyTo(duration, FlyToMode, view);
         const tourWait = new Cesium.KmlTourWait(wait);
         const pointTour = [tourFlyTo, tourWait];
-        console.log(pointTour);
         return pointTour;
     };
 
@@ -161,11 +160,27 @@ class Tour {
     /**
      * 游览开始
      * @param {Object} tour Cesium.KmlTour对象
-     * @param 
+     * @param {String} Easing //设置两点之间飞行时间的插值方式  https://cesium.com/docs/cesiumjs-ref-doc/EasingFunction.html
      * 
      */
-    startTour = (tour) => {
-        tour.play(this.viewer);
+    startTour = (tour, Easing) => {
+        let EasingFunction;
+        switch (Easing) {
+            case 'BACK_IN':
+                EasingFunction = Cesium.EasingFunction.BACK_IN;
+                break;
+            case 'BACK_IN_OUT':
+                EasingFunction = Cesium.EasingFunction.BACK_IN;
+                break;
+            case 'QUADRACTIC_IN_OUT':
+                EasingFunction = Cesium.EasingFunction.QUADRACTIC_IN_OUT;
+                break;
+            default:
+                EasingFunction =Cesium.EasingFunction.QUADRACTIC_IN_OUT;
+        };
+        tour.play(this.viewer, {
+            easingFunction: EasingFunction,
+        });
     };
 
     /**
