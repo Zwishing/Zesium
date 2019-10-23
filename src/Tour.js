@@ -27,8 +27,9 @@ class Tour {
      * @param {Number} wait 表示在当前点的停留时间 （秒）
      * @returns {Array} 返回一个游览点的飞行信息和停留信息的数组 [Cesium.KmlTourFlyTo, Cesium.KmlTourWait]
      */
-    toPointTour = (lon, lat, height, heading, pitch, roll, duration, FlyToMode, wait) => {
-        const destination = Cesium.Cartesian3.fromDegrees(lon, lat, height);
+    toPointTour = (cartesian, height, heading, pitch, roll, duration, FlyToMode, wait) => {
+
+        const destination = cartesian;
         //const orientation = new Cesium.HeadingPitchRoll(heading, pitch, roll);
         const range = height * (Math.sin(Math.abs(pitch)));
         const orientation = new Cesium.HeadingPitchRange(heading, pitch, range);
@@ -37,6 +38,7 @@ class Tour {
         const tourFlyTo = new Cesium.KmlTourFlyTo(duration, FlyToMode, view);
         const tourWait = new Cesium.KmlTourWait(wait);
         const pointTour = [tourFlyTo, tourWait];
+        console.log(pointTour);
         return pointTour;
     };
 
@@ -131,13 +133,6 @@ class Tour {
                     item.view.position.y,
                     item.view.position.z);
                 console.log(destination);
-                var ellipsoid = this.viewer.scene.globe.ellipsoid;
-                var cartographic = ellipsoid.cartesianToCartographic(destination);
-                var lat = Cesium.Math.toDegrees(cartographic.latitude);
-                var lng = Cesium.Math.toDegrees(cartographic.longitude);
-                var alt = cartographic.height;
-                console.log(cartographic);
-                console.log(lng, lat, alt);
                 if ('headingPitchRoll' in item.view) {
                     const orientation = new Cesium.HeadingPitchRoll(
                         item.view.headingPitchRoll.heading,

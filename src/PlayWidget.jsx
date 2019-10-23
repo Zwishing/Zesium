@@ -1,5 +1,5 @@
 import React from 'react';
-import { Slider, Row, Col, Button, Icon } from 'antd';
+import { Slider, Row, Col, Button, Icon, Switch } from 'antd';
 import './PlayWidget.css';
 
 class PlayWidget extends React.Component {
@@ -122,7 +122,7 @@ class PlayWidget extends React.Component {
                             ghost={true}
                             shape='circle'
                             onClick={this.onSave}
-                            disabled = {this.state.playing}
+                            disabled={this.state.playing}
                             title='保存'>
                             <Icon type='save'>
                             </Icon>

@@ -1,5 +1,6 @@
 import Cesium from 'cesium/Cesium';
 import square from './ico/square.svg';
+import Position from './Position';
 
 
 
@@ -22,7 +23,7 @@ class MarkPoint {
      */
     addMarkBound = (position, imgSrc, scale) => {
         this.viewer.entities.add({
-            position: Cesium.Cartesian3.fromDegrees(position.x, position.y, position.z),
+            position: position,
             show: true,
             id: 'markBound',
             billboard: new Cesium.BillboardGraphics({
@@ -66,7 +67,7 @@ class MarkPoint {
      */
     addMark = (position, imgSrc, scale) => {
         let entity = new Cesium.Entity({
-            position: Cesium.Cartesian3.fromDegrees(position.x, position.y, position.z),
+            position: position,
             // id:'newPoint' + this.newPointId,
             name: 'newPoint',//新建点的类型
             billboard: new Cesium.BillboardGraphics({
@@ -138,7 +139,7 @@ class MarkPoint {
                     boundEntity.position = new Cesium.CallbackProperty(() => {
                         return cartesian;
                     }, false);//防止闪烁，在移动的过程
-                    callback();
+                    callback(cartesian);
                 };
             };
         }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);

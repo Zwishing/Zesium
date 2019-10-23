@@ -19,7 +19,7 @@ class App extends React.Component {
     super(props);
     this.viewer = null;
     this.tourTime = 0;//保存游览的时间
-    this.Tour = {};//保存游览数据的类
+    this.Tour = null;//保存游览数据的类
     this.tour = {};//保存游览数据
     this.state = {
       cursor: 'default',
@@ -27,16 +27,15 @@ class App extends React.Component {
       currentPosition: {
         lon: null, //当前鼠标位置的经度
         lat: null, //当前鼠标位置的纬度
-        height: null, //当前鼠标位置的高度
-        roll: null, // x轴（经度）方向的旋转
-        heading: null,// Z轴方向的旋转
-        pitch: null, //y轴（纬度）方向旋转
+        height: 22000000, //当前鼠标位置的高度
+        roll: 0, // x轴（经度）方向的旋转
+        heading: 6.28,// Z轴方向的旋转
+        pitch: -1.57, //y轴（纬度）方向旋转
       },
       // 标记点的位置
       markPointPosition: {
-        lon: null, //当前鼠标位置的经度
-        lat: null, //当前鼠标位置的纬度
-        height: null, //当前鼠标位置的高度
+        cartesian: null,//笛卡尔坐标系
+        height: null, //当前位置的高度
         roll: null, // x轴（经度）方向的旋转
         heading: null,// Z轴方向的旋转
         pitch: null, //y轴（纬度）方向旋转
@@ -99,7 +98,7 @@ class App extends React.Component {
     setInterval(() => {
       console.log(Cesium.JulianDate.toIso8601(clock.tick()));
     }, 1000);
-    
+
   };
 
   setViewerCursor = () => {
@@ -273,16 +272,21 @@ class App extends React.Component {
 
   //加载kml飞行数据
   loadKmlTour = (kml) => {
-    this.Tour = new Tour(this.viewer);
+    if (!Cesium.defined(this.Tour)) {
+      this.Tour = new Tour(this.viewer);
+    };
     this.Tour.loadKmlTour(kml, (tour, tourTime) => {
       this.tour = tour;
       this.tourTime = Math.ceil(tourTime);
+      this.showTourPoints(this.tour);
     });
   };
 
   //加载Json飞行数据
   loadJsonTour = (id, name, playlist) => {
-    this.Tour = new Tour(this.viewer);
+    if (!Cesium.defined(this.Tour)) {
+      this.Tour = new Tour(this.viewer);
+    };
     const jsonTour = {
       id: id,
       name: name,
@@ -291,22 +295,22 @@ class App extends React.Component {
 
     [this.tour, this.tourTime] = this.Tour.laodJsonTour(jsonTour);
     this.tourTime = Math.ceil(this.tourTime);
+    this.showTourPoints(this.tour);
   };
 
   //转换为Json格式数据
   toJsonTour = (name, tourPoints) => {
-    console.log(this.viewer.entities);
-    this.viewer.entities.removeAll();
-    this.Tour = new Tour(this.viewer);
+    if (!Cesium.defined(this.Tour)) {
+      this.Tour = new Tour(this.viewer);
+    };
     let pointsTour = [];
     tourPoints.map(item => {
       pointsTour.push(this.Tour.toPointTour(
-        item.tourDestination[0],
-        item.tourDestination[1],
-        item.tourDestination[2],
-        item.tourOrientation[0],
-        item.tourOrientation[1],
-        item.tourOrientation[2],
+        item.tourDestination.cartesian,
+        item.tourDestination.height,
+        item.tourDestination.heading,
+        item.tourOrientation.pitch,
+        item.tourOrientation.roll,
         item.tourDuration,
         item.tourFlyToMode,
         item.tourWait));
@@ -314,6 +318,7 @@ class App extends React.Component {
     const jsonTour = this.Tour.toJsonTour('', name, pointsTour);
     [this.tour, this.tourTime] = this.Tour.laodJsonTour(jsonTour);
     this.tourTime = Math.ceil(this.tourTime);
+    this.showTourPoints(this.tour);
   };
   //开始游览
   startTour = () => {
@@ -344,14 +349,49 @@ class App extends React.Component {
 
   }
 
+  //设置游览点是否可见
+  showTourPoints = (tour) => {
+    this.removeByName('tourMark');//清除之前的游览点
+    for (let i = 0; i < tour.playlist.length; i++) {
+      if (tour.playlist[i].type === 'KmlTourFlyTo') {
+        const entity = new Cesium.Entity({
+          name: 'tourMark',
+          position: tour.playlist[i].view.position,
+          billboard: new Cesium.BillboardGraphics({
+            image: flag,
+            scale: 0.8,
+            heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
+          }),
+        });
+        this.viewer.entities.add(entity);
+      };
+    };
+
+  };
+
   //在视野中心位置添加标记
   addMark = () => {
-    let [centerLon, centerLat] = this.getCenterPosition();
+    const result = this.viewer.camera.pickEllipsoid(new Cesium.Cartesian2(this.viewer.canvas.clientWidth / 2, this.viewer.canvas.clientHeight / 2));
     this.markPoint = new MarkPoint(this.viewer);
-    this.markPoint.addMark(new Cesium.Cartesian3(centerLon, centerLat, 2000), flag, 0.8);
-    this.markPoint.moveMark(() => {
+    this.setState({
+      markPointPosition: {
+        cartesian: result,
+        height: this.state.currentPosition.height,
+        heading: this.state.currentPosition.heading,
+        pitch: this.state.currentPosition.pitch,
+        roll: this.state.currentPosition.roll,
+      },
+    });
+    this.markPoint.addMark(result, flag, 0.8);
+    this.markPoint.moveMark((cartesian) => {
       this.setState({
-        markPointPosition: this.state.currentPosition,
+        markPointPosition: {
+          cartesian: cartesian,
+          height: this.state.currentPosition.height,
+          heading: this.state.currentPosition.heading,
+          pitch: this.state.currentPosition.pitch,
+          roll: this.state.currentPosition.roll,
+        },
       });
     });
   };
@@ -364,39 +404,13 @@ class App extends React.Component {
     this.markPoint.cancelNewPoint();
   };
 
-  //获取画面中心点的经纬度高度以及旋转方向
-  getCenterPosition = () => {
-    const result = this.viewer.camera.pickEllipsoid(new Cesium.Cartesian2(this.viewer.canvas.clientWidth / 2, this.viewer.canvas.clientHeight / 2));
-    const centerPosition = Cesium.Ellipsoid.WGS84.cartesianToCartographic(result);
-    const centerLon = centerPosition.longitude * 180 / Math.PI;;
-    const centerLat = centerPosition.latitude * 180 / Math.PI;
-    const centerHeight = Math.ceil(this.viewer.scene.camera.positionCartographic.height);
-    centerPosition.height = centerHeight;
-    const position = Cesium.Cartographic.toCartesian(centerPosition);
-    const centerRoll = this.viewer.scene.camera.roll;
-    const centerHeading = this.viewer.scene.camera.heading;
-    const centerPitch = this.viewer.scene.camera.pitch;
-    console.log(centerPosition, position);
-    this.setState({
-      markPointPosition: {
-        lon: centerLon, //当前鼠标位置的经度
-        lat: centerLat, //当前鼠标位置的纬度
-        height: centerHeight, //当前鼠标位置的高度
-        roll: centerRoll, // x轴（经度）方向的旋转
-        heading: centerHeading,// Z轴方向的旋转
-        pitch: centerPitch, //y轴（纬度）方向旋转
-      }
-    });
-    return [centerLon, centerLat];
-  };
-
   //按名字移除实体
   removeByName = (name) => {
     let Id = [];
     this.viewer.entities.values.map(entity => {
       if (entity.name === name) {
         Id.push(entity.id);
-      }
+      };
     });
     Id.map(id => this.viewer.entities.removeById(id));
   };
@@ -419,7 +433,6 @@ class App extends React.Component {
   render() {
     return (
       <div id='cesiumContainer' style={{ cursor: this.state.cursor }}>
-        <Button type='primary' onClick={this.test}></Button>
         <TourBox
           showTourDialog={this.state.showTourDialog}
           addTourPoint={this.addMark}

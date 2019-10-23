@@ -2,7 +2,7 @@
     position: absolute;
     z-index: 2;
     cursor: auto;
-    color: azure;
+    color: rgb(219, 217, 217);
     display: block;
     text-align: center;
     padding: 1%;
@@ -11,6 +11,7 @@
     left:58%;
     right: 2%;
     border: 1px solid  rgb(165, 253, 253);
+    width:450px;
 }
 .btn-tour{
   position: absolute;
@@ -46,11 +47,14 @@
     border: 1px solid  rgb(165, 253, 253);
   }
   .btn-addtour {
-    right:30%;
+    /* right:30%; */
   }
   .btn-addtour-state {
-    left:30%;
+    /* left:30%; */
   }
   .ant-tabs-tab{
     color: azure;
+  }
+  .dialog-tabpane-item-addtour-row{
+    padding-top: 10px;
   }

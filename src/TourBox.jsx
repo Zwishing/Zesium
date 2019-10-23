@@ -41,8 +41,15 @@ class TourBox extends React.Component {
         let tourPosition = this.props.markPointPosition;
         //用于保存数据
         this.tourTrack.push({
-            tourDestination: [tourPosition.lon, tourPosition.lat, tourPosition.height],
-            tourOrientation: [tourPosition.heading, tourPosition.pitch, tourPosition.roll],
+            tourDestination: {
+                cartesian: tourPosition.cartesian,
+                height: tourPosition.height,
+            },
+            tourOrientation: {
+                heading:tourPosition.heading,
+                pitch: tourPosition.pitch,
+                roll: tourPosition.roll
+            },
             tourWait: this.state.tourWait,
             tourDuration: this.state.tourDuration,
             tourFlyToMode: this.state.tourFlyToMode,
@@ -50,6 +57,7 @@ class TourBox extends React.Component {
         this.setState({
             disabled: !this.state.disabled,
         });
+        console.log(this.tourTrack);
         this.props.markPointOK();
     };
 
@@ -144,65 +152,91 @@ class TourBox extends React.Component {
                                     <br />
                                     <br />
                                     <div className='dialog-tabpane-item-addtour'>
-                                        <Button type='primary'
-                                            onClick={this.addTourPoint}
-                                            disabled={this.state.disabled}
-                                            className='btn-addtour'>
-                                            添加游览点
-                                    </Button>
-                                        <Button.Group className='btn-addtour-state'>
-                                            <Button type='primary'
-                                                onClick={this.addTourPointOK}
-                                                disabled={!this.state.disabled}>
-                                                确认
-                                    </Button>
-                                            <Button type='primary'
-                                                onClick={this.addTourPointCancel}
-                                                disabled={!this.state.disabled}>
-                                                取消
-                                    </Button>
-                                        </Button.Group>
-                                        <br />
-                                        <br />
-                                        <span><b>游览时间(秒)</b>
-                                            <InputNumber defaultValue={this.state.tourWait}
-                                                min={0} max={120}
-                                                disabled={!this.state.disabled}
-                                                onChange={this.onChangeTourWait}>
-                                            </InputNumber>
-                                        </span>
-                                        <span><b>去下个游览时间(秒)</b>
-                                            <InputNumber defaultValue={this.state.tourDuration}
-                                                min={1} max={120}
-                                                disabled={!this.state.disabled}
-                                                onChange={this.onChangeTourDuration}>
-                                            </InputNumber>
-                                        </span>
-                                        <span><b>去下个游览方式</b>
-                                            <Radio.Group onChange={this.onChangeRadio}
-                                                value={this.state.tourFlyToMode}
-                                                disabled={!this.state.disabled}>
-                                                <Radio value='bounce'><b>跳动</b></Radio>
-                                                <Radio value='smooth'><b>平稳</b></Radio>
-                                            </Radio.Group>
-                                        </span>
-                                        <br />
-                                        <br />
-                                        <Button type='primary'
-                                            onClick={this.tourFinish}
-                                            disabled={this.state.disabled}>
-                                            完成路径
-                                    </Button>
+                                        <Row className='dialog-tabpane-item-addtour-row'> 
+                                            <Col span={6}>
+                                                <Button type='default'
+                                                    ghost = {true}
+                                                    onClick={this.addTourPoint}
+                                                    disabled={this.state.disabled}
+                                                    className='btn-addtour'>
+                                                    添加
+                                            </Button>
+                                            </Col>
+                                            <Col span={4} offset={10}>
+                                                {/* <Button.Group className='btn-addtour-state'> */}
+                                                <Button type='default'
+                                                    ghost = {true}
+                                                    onClick={this.addTourPointOK}
+                                                    disabled={!this.state.disabled}>
+                                                    确认
+                                                </Button>
+                                            </Col>
+                                            <Col span={4}>
+                                                <Button type='default'
+                                                    ghost = {true}
+                                                    onClick={this.addTourPointCancel}
+                                                    disabled={!this.state.disabled}>
+                                                    取消
+                                                </Button>
+                                                {/* </Button.Group> */}
+                                            </Col>
+                                        </Row>
+                                        <Row className='dialog-tabpane-item-addtour-row'>
+                                            <Col span={7} offset={4}>
+                                                <b>游览时间(秒)</b>
+                                            </Col>
+                                            <Col span={8}>
+                                                <b>去下个游览点时间(秒)</b>
+                                            </Col>
+                                        </Row>
+                                        <Row className='dialog-tabpane-item-addtour-row'>
+                                            <Col span={7} offset={4}>
+                                                <InputNumber defaultValue={this.state.tourWait}
+                                                    min={0} max={120}
+                                                    disabled={!this.state.disabled}
+                                                    onChange={this.onChangeTourWait}>
+                                                </InputNumber>
+                                            </Col>
+                                            <Col span={8}>
+                                                <InputNumber defaultValue={this.state.tourDuration}
+                                                    min={1} max={120}
+                                                    disabled={!this.state.disabled}
+                                                    onChange={this.onChangeTourDuration}>
+                                                </InputNumber>
+                                            </Col>
+                                        </Row>
+                                        <Row className='dialog-tabpane-item-addtour-row'>
+                                            <Col>
+                                                <span><b>去下个游览方式</b>
+                                                    <Radio.Group onChange={this.onChangeRadio}
+                                                        value={this.state.tourFlyToMode}
+                                                        disabled={!this.state.disabled}>
+                                                        <Radio value='bounce'><b>跳动</b></Radio>
+                                                        <Radio value='smooth'><b>平稳</b></Radio>
+                                                    </Radio.Group>
+                                                </span>
+                                            </Col>
+                                        </Row>
+                                        <Row className='dialog-tabpane-item-addtour-row'>
+                                            <Col>
+                                                <Button type='default'
+                                                    ghost = {true}
+                                                    onClick={this.tourFinish}
+                                                    disabled={this.state.disabled}>
+                                                    完成路径
+                                                </Button>
+                                            </Col>
+                                        </Row>
                                     </div>
                                 </TabPane>
-                                <TabPane tab="加载Json游览路径" key="2">
+                                <TabPane tab="Json游览路径" key="2">
                                     <UploadTour
                                         toggle={this.props.toggle}
                                         accept='json'
                                         loadJsonTour={this.props.loadJsonTour}>
                                     </UploadTour>
                                 </TabPane>
-                                <TabPane tab='加载Kml游览路径' key="3">
+                                <TabPane tab='Kml游览路径' key="3">
                                     <UploadTour
                                         loadKmlTour={this.props.loadKmlTour}
                                         toggle={this.props.toggle}
