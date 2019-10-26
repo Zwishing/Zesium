@@ -176,7 +176,7 @@ class Tour {
                 EasingFunction = Cesium.EasingFunction.QUADRACTIC_IN_OUT;
                 break;
             default:
-                EasingFunction =Cesium.EasingFunction.QUADRACTIC_IN_OUT;
+                EasingFunction = Cesium.EasingFunction.QUADRACTIC_IN_OUT;
         };
         tour.play(this.viewer, {
             easingFunction: EasingFunction,

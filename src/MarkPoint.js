@@ -151,7 +151,9 @@ class MarkPoint {
      */
     successNewPoint = () => {
         this.viewer.entities.removeById('markBound');
-        this.viewer.entities._entities._array.pop().allowMove = false;
+        console.log(this.viewer.entities.values);
+        //this.viewer.entities.values.pop().allowMove = false;
+        //this.viewer.entities.values.pop().removeProperty('allowMove');
     };
 
     /**
@@ -162,7 +164,7 @@ class MarkPoint {
         if (Cesium.defined(this.pick)) {
             this.viewer.entities.removeById(this.pick.id.id);
         } else {
-            this.viewer.entities.removeById(this.viewer.entities._entities._array.pop().id);
+            this.viewer.entities.removeById(this.viewer.entities.values.pop().id);
         };
     };
 };

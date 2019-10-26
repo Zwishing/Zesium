@@ -300,6 +300,7 @@ class App extends React.Component {
 
   //转换为Json格式数据
   toJsonTour = (name, tourPoints, easingFunction) => {
+    this.removeByName('newPoint');
     if (!Cesium.defined(this.Tour)) {
       this.Tour = new Tour(this.viewer);
     };
@@ -366,7 +367,6 @@ class App extends React.Component {
         this.viewer.entities.add(entity);
       };
     };
-
   };
 
   //在视野中心位置添加标记
@@ -417,7 +417,6 @@ class App extends React.Component {
 
   toggle = (stateName) => {
     if (stateName === 'showPlayBar') {
-      console.log(this.viewer.entities);
       if(this.state.showPlayBar){
         this.removeByName('tourMark');
       };
