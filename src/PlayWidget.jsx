@@ -30,7 +30,7 @@ class PlayWidget extends React.Component {
                 };
                 that.timerId = setTimeout(fn, 1000);
             } else {
-                clearTimeout(that.timerId);
+                that.reset();
                 that.setState({
                     playing: false,
                 });
