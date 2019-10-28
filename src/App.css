@@ -1,0 +1,85 @@
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  animation: App-logo-spin infinite 20s linear;
+  height: 40vmin;
+  pointer-events: none;
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+#cesiumContainer {
+  position: absolute;
+  display:block;
+  z-index:2;
+  width: 100%;
+  height: 100%;
+}
+
+#dropdownButton {
+  position:absolute;
+  z-index: 2;
+  left:20;
+  right:20;
+}
+
+#Beijing {
+  position:absolute;
+  z-index: 2;
+  left:50%;
+}
+
+#positionLabel {
+  position:absolute;
+  z-index: 2;
+  bottom: 1.8%;
+  right: 0.5%;
+  color: azure
+}
+#flyTrack {
+  position:absolute;
+  top: 2%;
+  left: 1%;
+  z-index: 2;
+}
+
+#flyingTimeline {
+  position:absolute;
+  z-index: 2;
+  bottom: 2%;
+  right: 50%;
+}
+
+#flyingTimeline span{
+  background-color: white;
+  width: 20px;
+}
+
+.cesium-viewer {
+  position:absolute;
+  z-index: 1;
+}

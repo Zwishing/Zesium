@@ -1,0 +1,60 @@
+.box {
+    position: absolute;
+    z-index: 2;
+    cursor: auto;
+    color: rgb(219, 217, 217);
+    display: block;
+    text-align: center;
+    padding: 1%;
+    background-color: rgba(15, 15, 15, 0.6);
+    top: 8%;
+    left:58%;
+    right: 2%;
+    border: 1px solid  rgb(165, 253, 253);
+    width:450px;
+}
+.btn-tour{
+  position: absolute;
+  z-index: 2;
+}
+.no-cursor {
+    cursor: auto;
+  }
+ .cursor {
+    cursor: move;
+  }
+  .dialog-header{
+     border-bottom: 1px solid rgb(165, 253, 253); 
+  }
+
+  .dialog-header-name {
+    text-align: left;
+  }
+  .dialog-header-close{
+    text-align: right;
+  }
+  .dialog-footer{
+    text-align: right;
+  }
+  .dialog-tabpane {
+    border: 1px solid rgba(34,36,38,.15);
+    background-color: rgba(15, 15, 15, 0.8);
+    color: azure;
+  }b{
+    color: azure;
+  }
+  .dialog-tabpane-item-addtour {
+    border: 1px solid  rgb(165, 253, 253);
+  }
+  .btn-addtour {
+    /* right:30%; */
+  }
+  .btn-addtour-state {
+    /* left:30%; */
+  }
+  .ant-tabs-tab{
+    color: azure;
+  }
+  .dialog-tabpane-item-addtour-row{
+    padding-top: 10px;
+  }

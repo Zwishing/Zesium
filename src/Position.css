@@ -1,0 +1,9 @@
+.position-bar {
+    position: absolute;
+    z-index: 2;
+    color: white;
+    bottom: 1%;
+    right: 5%;
+}p{
+    display: inline;
+}
