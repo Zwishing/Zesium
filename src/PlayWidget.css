@@ -1,7 +1,8 @@
 .play-widget{
     position: absolute;
     z-index: 5;
-    bottom:2%;
+    top:1%;
+    left:40%;
     padding: 0.2%;
     width: 22%;
     text-align: center;
