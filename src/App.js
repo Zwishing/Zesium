@@ -10,8 +10,7 @@ import Position from './Position';
 import flag from './ico/pin (1).svg';
 import round from './ico/round.svg';
 import Tour from './Tour';
-import Cursor from './Cursor.js';
-import { Button } from 'antd';
+
 
 class App extends React.Component {
 
@@ -188,16 +187,9 @@ class App extends React.Component {
     let scene = this.viewer.scene;
     //得到当前三维场景的椭球体
     let ellipsoid = scene.globe.ellipsoid;
-    let longitudeString = null;
-    let latitudeString = null;
-    let height = null;
-    let cartesian = null;
-    let roll = null;
-    let heading = null;
-    let pitch = null;
+    let lon, lat, height, cartesian, heading, pitch, roll = null;
     // 定义当前场景的画布元素的事件处理
     let handler = new Cesium.ScreenSpaceEventHandler(scene.canvas);
-
     //设置鼠标移动事件的处理函数，这里负责监听x,y坐标值变化
     handler.setInputAction((movement) => {
       cartesian = scene.camera.pickEllipsoid(movement.endPosition, ellipsoid);
@@ -206,25 +198,25 @@ class App extends React.Component {
         //将笛卡尔坐标转换为地理坐标
         var cartographic = ellipsoid.cartesianToCartographic(cartesian);
         //将弧度转为度的十进制度表示
-        longitudeString = Cesium.Math.toDegrees(cartographic.longitude);
-        latitudeString = Cesium.Math.toDegrees(cartographic.latitude);
+        lon = Cesium.Math.toDegrees(cartographic.longitude);
+        lat = Cesium.Math.toDegrees(cartographic.latitude);
         //获取相机高度
         height = Math.ceil(scene.camera.positionCartographic.height);
         roll = scene.camera.roll;
         heading = scene.camera.heading;
         pitch = scene.camera.pitch;
       } else {
-        longitudeString = null;
-        latitudeString = null;
+        lon = null;
+        lat = null;
         height = null;
         roll = null;
         heading = null;
         pitch = null;
-      }
+      };
       this.setState({
         currentPosition: {
-          lon: longitudeString,
-          lat: latitudeString,
+          lon: lon,
+          lat: lat,
           height: height,
           roll: roll,
           heading: heading,
@@ -242,8 +234,8 @@ class App extends React.Component {
       pitch = scene.camera.pitch;
       this.setState({
         currentPosition: {
-          lon: longitudeString,
-          lat: latitudeString,
+          lon: lon,
+          lat: lat,
           height: height,
           roll: roll,
           heading: heading,
@@ -259,8 +251,8 @@ class App extends React.Component {
       pitch = scene.camera.pitch;
       this.setState({
         currentPosition: {
-          lon: longitudeString,
-          lat: latitudeString,
+          lon: lon,
+          lat: lat,
           height: height,
           roll: roll,
           heading: heading,
@@ -301,6 +293,7 @@ class App extends React.Component {
   //转换为Json格式数据
   toJsonTour = (name, tourPoints, easingFunction) => {
     this.removeByName('newPoint');
+    console.log(this.viewer.entities);
     if (!Cesium.defined(this.Tour)) {
       this.Tour = new Tour(this.viewer);
     };
@@ -320,7 +313,7 @@ class App extends React.Component {
     const jsonTour = this.Tour.toJsonTour('', name, pointsTour);
     [this.tour, this.tourTime] = this.Tour.laodJsonTour(jsonTour);
     this.tourTime = Math.ceil(this.tourTime);
-    this.showTourPoints(this.tour);
+    //this.showTourPoints(this.tour);
   };
   //开始游览
   startTour = () => {
@@ -417,7 +410,7 @@ class App extends React.Component {
 
   toggle = (stateName) => {
     if (stateName === 'showPlayBar') {
-      if(this.state.showPlayBar){
+      if (this.state.showPlayBar) {
         this.removeByName('tourMark');
       };
       this.setState({

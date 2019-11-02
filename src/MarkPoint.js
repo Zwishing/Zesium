@@ -1,8 +1,5 @@
 import Cesium from 'cesium/Cesium';
 import square from './ico/square.svg';
-import Position from './Position';
-
-
 
 /**
  * 添加标记点的类
