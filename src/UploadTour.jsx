@@ -46,8 +46,6 @@ class UploadTour extends React.Component {
                 </Input>
                 <br />
                 <br />
-                {/* <Button type='primary' onClick={this.onClickOK}>确认</Button>
-                <Button type='primary' onClick={this.onClickCancel}>取消</Button> */}
             </div>
         );
     };
