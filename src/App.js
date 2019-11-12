@@ -50,6 +50,11 @@ class App extends React.Component {
     this.initEarth();
     this.getCurrentPosition();
     this.setViewerCursor();
+    this.viewer.clock.onTick.addEventListener(()=>{
+      this.viewer.clock.multiplier = 100;
+      this.viewer.clock.clockStep = Cesium.ClockStep.SYSTEM_CLOCK;
+      console.log(Cesium.JulianDate.toIso8601(this.viewer.clock.currentTime));
+    });
   };
 
   //初始化地球
